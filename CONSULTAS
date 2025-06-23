@@ -1,0 +1,109 @@
+
+if OBJECT_ID ('libros') is not null
+drop table libros;
+
+create table libros(
+codigo int identity,
+titulo varchar(40) not null,
+autor varchar(20) default 'Desconocido',
+editorial varchar (20),
+precio decimal(6,2),
+primary key (codigo)
+);
+
+insert into libros
+  values('El aleph','Borges','Emece',15.90);
+insert into libros
+  values('Antología poética','J. L. Borges','Planeta',null);
+insert into libros
+  values('Alicia en el pais de las maravillas','Lewis Carroll',null,19.90);
+insert into libros
+  values('Matematica estas ahi','Paenza','Siglo XXI',15);
+insert into libros
+  values('Martin Fierro','Jose Hernandez',default,40);
+insert into libros
+  values('Aprenda PHP','Mario Molina','Nuevo siglo',null);
+insert into libros
+  values('Uno','Richard Bach','Planeta',20);
+  insert into libros
+  values('PHP Basico','Mario Molina','Emece',18);
+    insert into libros
+  values('PHP Avanzado','Paenza','Planeta',16);
+
+select * from libros
+
+select COUNT(*)  as [Numero de libros] from libros
+
+select COUNT(*) as [Editorial planeta]
+from libros
+where editorial = 'Planeta';
+
+select count(precio)
+from libros;
+
+create table Ventas(
+VentasID INT PRIMARY KEY,
+ClienteID INT ,
+ProductoID INT,
+FechaVenta DATE,
+Cantidad INT,
+VendedorID INT 
+);
+
+INSERT INTO Ventas VALUES
+(1, 101, 5001, '2023-01-15', 2, 10),
+(2, 102, 5002, '2023-01-15', 1, 10),
+(3, 101, 5003, '2023-01-16', 3, 11),
+(4, 103, 5001, '2023-01-17', 1, 10),
+(5, 104, 5002, '2023-01-18', 2, 11),
+(6, 101, 5001, '2023-01-19', 1, 10),
+(7, 105, 5004, '2023-01-20', 1, 12);
+
+select * from ventas;
+
+select COUNT(distinct(ClienteID))AS TotalClientesUnicos 
+From Ventas;
+
+SELECT 
+COUNT(DISTINCT ProductoID) AS PrdoductosDistintosVendidos
+From Ventas;
+
+select COUNT(*) as TotalVentas,
+COUNT(distinct(ClienteID)) AS ClientesUnidos,
+COUNT(distinct(ProductoID)) AS ProductosDiferentes
+From Ventas;
+
+select sum (precio) as totalVentas
+from libros
+where editorial = 'Emece' or editorial ='Planeta';
+
+-------------------------------------------------------------------------------------------------
+--base de datos AdventureWork--------
+
+select 
+	p.Name AS Producto,
+(select sum(OrderQty)
+from Sales.SalesOrderDetail
+where ProductID = 707) AS CantidadTotalVendida,
+(SELECT SUM(LineTotal)
+From Sales.SalesOrderDetail
+where ProductID = 707) as ValorTotalVentas
+From 
+Production.Product p
+where
+p.ProductID = 707;
+--indica el producto mas vendido con al ID 707-------
+--Y SUMA LA CANTIDAD VENDIDA Y EL TOTAL DE VENTAS--
+
+select 
+e.BusinessEntityID AS ID_Empleo,
+p.FirstName +' '+p.LastName AS NombreEmpleado,
+(select sum(VacationHours)
+from HumanResources.Employee
+where BusinessEntityID = 4 ) AS TotalHorasVacaciones
+from
+HumanResources.Employee e
+join
+Person.Person p on e.BusinessEntityID = p.BusinessEntityID
+where
+e.BusinessEntityID = 4;
