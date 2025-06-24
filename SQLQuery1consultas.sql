@@ -1,0 +1,248 @@
+	create database librosusuarios
+
+
+	if OBJECT_ID ('libros') is not null
+	drop table libros;
+
+	create table libros(
+	codigo int identity,
+	titulo varchar(40) not null,
+	autor varchar(20) default 'Desconocido',
+	editorial varchar (20),
+	precio decimal(6,2),
+	primary key (codigo)
+	);
+
+	insert into libros
+	  values('El aleph','Borges','Emece',15.90);
+	insert into libros
+	  values('Antología poética','J. L. Borges','Planeta',null);
+	insert into libros
+	  values('Alicia en el pais de las maravillas','Lewis Carroll',null,19.90);
+	insert into libros
+	  values('Matematica estas ahi','Paenza','Siglo XXI',15);
+	insert into libros
+	  values('Martin Fierro','Jose Hernandez',default,40);
+	insert into libros
+	  values('Aprenda PHP','Mario Molina','Nuevo siglo',null);
+	insert into libros
+	  values('Uno','Richard Bach','Planeta',20);
+	  insert into libros
+	  values('PHP Basico','Mario Molina','Emece',18);
+		insert into libros
+	  values('PHP Avanzado','Paenza','Planeta',16);
+
+	select * from libros
+
+	select COUNT(*)  as [Numero de libros] from libros
+
+	select COUNT(*) as [Editorial planeta]
+	from libros
+	where editorial = 'Planeta';
+
+	select count(precio)
+	from libros;
+
+	create table Ventas(
+	VentasID INT PRIMARY KEY,
+	ClienteID INT ,
+	ProductoID INT,
+	FechaVenta DATE,
+	Cantidad INT,
+	VendedorID INT 
+	);
+
+	INSERT INTO Ventas VALUES
+	(1, 101, 5001, '2023-01-15', 2, 10),
+	(2, 102, 5002, '2023-01-15', 1, 10),
+	(3, 101, 5003, '2023-01-16', 3, 11),
+	(4, 103, 5001, '2023-01-17', 1, 10),
+	(5, 104, 5002, '2023-01-18', 2, 11),
+	(6, 101, 5001, '2023-01-19', 1, 10),
+	(7, 105, 5004, '2023-01-20', 1, 12);
+
+	select * from ventas;
+
+	select COUNT(distinct(ClienteID))AS TotalClientesUnicos 
+	From Ventas;
+
+	SELECT 
+	COUNT(DISTINCT ProductoID) AS PrdoductosDistintosVendidos
+	From Ventas;
+
+	select COUNT(*) as TotalVentas,
+	COUNT(distinct(ClienteID)) AS ClientesUnidos,
+	COUNT(distinct(ProductoID)) AS ProductosDiferentes
+	From Ventas;
+
+	select sum (precio) as totalVentas
+	from libros
+	where editorial = 'Emece' or editorial ='Planeta';
+
+	--AVG--
+
+	select avg (precio)
+	from libros
+	where titulo like '%PHP%';
+
+
+
+	select editorial, COUNT(*) as [Numero de libros por cada editorial]
+	from libros
+	group by editorial;
+
+	select editorial, sum (precio) as [Total de precio por cada editorial]
+	from libros
+	group by editorial;
+
+	select editorial,
+	max(precio) as Mayor,
+	min (precio) as Menor
+	from libros
+	group by editorial;
+
+	select editorial, COUNT(*)
+	from libros
+	where precio<30
+	group by all editorial;
+
+	-----------------------------------------------------------------------------------------------
+	-----------------------------------------------------------------------------------------------
+	-----------------------------------base de datos AdventureWork---------------------------------
+
+	select 
+		p.Name AS Producto,
+	(select sum(OrderQty)
+	from Sales.SalesOrderDetail
+	where ProductID = 707) AS CantidadTotalVendida,
+	(SELECT SUM(LineTotal)
+	From Sales.SalesOrderDetail
+	where ProductID = 707) as ValorTotalVentas
+	From 
+	Production.Product p
+	where
+	p.ProductID = 707;
+	--indica el producto mas vendido con al ID 707-------
+	--Y SUMA LA CANTIDAD VENDIDA Y EL TOTAL DE VENTAS--
+
+	select 
+	e.BusinessEntityID AS ID_Empleo,
+	p.FirstName +' '+p.LastName AS NombreEmpleado,
+	(select sum(VacationHours)
+	from HumanResources.Employee
+	where BusinessEntityID = 4 ) AS TotalHorasVacaciones
+	from
+	HumanResources.Employee e
+	join
+	Person.Person p on e.BusinessEntityID = p.BusinessEntityID
+	where
+	e.BusinessEntityID = 4;
+
+	-------------------------------------------------------------------------------------------------------
+
+	select max (precio)
+	from libros;
+
+	select min (precio)
+	from libros
+	where autor like '%za%';
+
+	/*Obtener el precio maximo de los productos
+	en la subcategoria 'Mountain bikes'*/
+
+	select max (ListPrice)
+	from Production.Product
+	where ProductSubcategoryID=1
+
+	select *
+	from Production.ProductSubcategory
+	where Name = 'Mountain Bikes'
+
+	select 
+	'Mountain Bikes' as Subcategoria,
+	(select max (ListPrice)
+	from Production.Product
+	where ProductSubcategoryID =(
+	select ProductSubcategoryID
+	from Production.ProductSubcategory
+	where Name = 'Mountain Bikes'
+	)) as PrecioMaximo;
+
+	select 'Es el fin del mundo hay guerra'
+	as Mensaje
+
+	--Obtener la fecha más reciente de compra para el cliete con ID 1100
+
+	select
+	c.CustomerID,
+	P.FirstName +' '+P.LastName AS Cliente,
+	(select max (OrderDate)
+	from Sales.SalesOrderHeader
+	where CustomerID = 11000) as UltimaFechaCompra
+	from 
+	Sales.Customer c 
+	Join 
+	Person.Person p on c.PersonID = p.BusinessEntityID
+	where 
+	c.CustomerID=11000;
+
+	-------------------------------------------------------------------
+ 
+	select 
+	'Mountain Bikes' as Subcategoria,
+	(select max (ListPrice)
+	from Production.Product
+	where ProductSubcategoryID =(
+	select ProductSubcategoryID
+	from Production.ProductSubcategory
+	where Name = 'Mountain Bikes'
+	)) as Precio
+
+	 union
+	 select 
+	 'Bikes' as Categoria,
+	 (select min (ListPrice)
+	 from Production.Product
+	 where ProductSubcategoryID IN(
+	 select ProductSubcategoryID
+	 from Production.ProductSubcategory
+	 where ProductCategoryID = (
+	 select ProductCategoryID
+	 from Production.ProductCategory
+	 where Name = 'Bikes'
+	 )
+	 )) as Precio;
+
+	-- Obtener la fecha de contratacion mas antigua en el departamento 'Engineering'
+
+	select 
+	'Engineering' as Departamento,
+	(Select min (Hiredate)
+	from HumanResources.Employee
+	where BusinessEntityID in  (
+	select BusinessEntityID 
+	from HumanResources.EmployeeDepartmentHistory
+	where DepartmentID = (
+	select DepartmentID
+	from HumanResources.Department
+	where Name ='Engineering'
+	)
+	)) as FechaContratacionMasAntigua;
+
+
+	select 
+	'Bike' as Categoria,
+	(select avg (p.ListPrice)
+	from Production.Product p
+	join Production.ProductSubcategory ps
+	on p.ProductSubcategoryID = ps.ProductSubcategoryID
+	join Production.ProductCategory pc
+	on ps.ProductCategoryID = pc.ProductCategoryID
+	where pc.Name = 'Bikes' ) as PrecioPromedio;
+
+	select * from Production.ProductSubcategory
+	where ProductCategoryID=1
+
+-------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
