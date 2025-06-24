@@ -1,3 +1,5 @@
+create database librosusuarios
+
 
 if OBJECT_ID ('libros') is not null
 drop table libros;
@@ -77,7 +79,21 @@ select sum (precio) as totalVentas
 from libros
 where editorial = 'Emece' or editorial ='Planeta';
 
--------------------------------------------------------------------------------------------------
+--AVG--
+
+select avg (precio)
+from libros
+where titulo like '%PHP%';
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------
 --base de datos AdventureWork--------
 
 select 
@@ -107,3 +123,115 @@ join
 Person.Person p on e.BusinessEntityID = p.BusinessEntityID
 where
 e.BusinessEntityID = 4;
+
+-------------------------------------------------------------------------------------------------------
+
+select max (precio)
+from libros;
+
+select min (precio)
+from libros
+where autor like '%za%';
+
+/*Obtener el precio maximo de los productos
+en la subcategoria 'Mountain bikes'*/
+
+select max (ListPrice)
+from Production.Product
+where ProductSubcategoryID=1
+
+select *
+from Production.ProductSubcategory
+where Name = 'Mountain Bikes'
+
+select 
+'Mountain Bikes' as Subcategoria,
+(select max (ListPrice)
+from Production.Product
+where ProductSubcategoryID =(
+select ProductSubcategoryID
+from Production.ProductSubcategory
+where Name = 'Mountain Bikes'
+)) as PrecioMaximo;
+
+select 'Es el fin del mundo hay guerra'
+as Mensaje
+
+--Obtener la fecha más reciente de compra para el cliete con ID 1100
+
+select
+c.CustomerID,
+P.FirstName +' '+P.LastName AS Cliente,
+(select max (OrderDate)
+from Sales.SalesOrderHeader
+where CustomerID = 11000) as UltimaFechaCompra
+from 
+Sales.Customer c 
+Join 
+Person.Person p on c.PersonID = p.BusinessEntityID
+where 
+c.CustomerID=11000;
+
+-------------------------------------------------------------------
+ 
+select 
+'Mountain Bikes' as Subcategoria,
+(select max (ListPrice)
+from Production.Product
+where ProductSubcategoryID =(
+select ProductSubcategoryID
+from Production.ProductSubcategory
+where Name = 'Mountain Bikes'
+)) as Precio
+
+ union
+ select 
+ 'Bikes' as Categoria,
+ (select min (ListPrice)
+ from Production.Product
+ where ProductSubcategoryID IN(
+ select ProductSubcategoryID
+ from Production.ProductSubcategory
+ where ProductCategoryID = (
+ select ProductCategoryID
+ from Production.ProductCategory
+ where Name = 'Bikes'
+ )
+ )) as Precio;
+
+-- Obtener la fecha de contratacion mas antigua en el departamento 'Engineering'
+
+select 
+'Engineering' as Departamento,
+(Select min (Hiredate)
+from HumanResources.Employee
+where BusinessEntityID in  (
+select BusinessEntityID 
+from HumanResources.EmployeeDepartmentHistory
+where DepartmentID = (
+select DepartmentID
+from HumanResources.Department
+where Name ='Engineering'
+)
+)) as FechaContratacionMasAntigua;
+
+
+select 
+'Bike' as Categoria,
+(select avg (p.ListPrice)
+from Production.Product p
+join Production.ProductSubcategory ps
+on p.ProductSubcategoryID = ps.ProductSubcategoryID
+join Production.ProductCategory pc
+on ps.ProductCategoryID = pc.ProductCategoryID
+where pc.Name = 'Bikes' ) as PrecioPromedio;
+
+select * from Production.ProductSubcategory
+where ProductCategoryID=1
+
+
+
+
+
+
+
